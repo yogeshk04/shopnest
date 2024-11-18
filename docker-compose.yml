@@ -1,0 +1,67 @@
+#version: '3.7'
+
+services:
+  # MySql database service
+  mysqldb:
+    image: "mysql:8.0"
+    container_name: shopnest-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ShopNest_Rpwd
+      MYSQL_DATABASE: shopnest-db
+      MYSQL_USER: shopnest_usr
+      MYSQL_PASSWORD: ShopNest_pwd
+    ports:
+    - 3306:3306
+    networks:
+      - shopnest-net
+    volumes:
+      - mysql-data:/var/lib/mysql    
+
+  # MySql Web UI using php my admin
+  php-my-admin:
+    image: phpmyadmin
+    restart: always
+    container_name: php-my-admin
+    ports:
+      - 8081:80
+    environment:
+      - PMA_ARBITRARY=1
+    networks:
+      - shopnest-net
+
+  # Backend Spring Boot application
+  backend:
+    build: ./shopnest-api
+    container_name: shopnest-api
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - shopnest-net
+    environment:
+      - spring.datasource.url=jdbc:mysql://mysqldb:3306/shopnest-db?allowPublicKeyRetrieval=true
+    depends_on:
+      - mysqldb
+    volumes:
+      - .m2:/root/.m2
+
+  # Frontend React application
+  frontend:
+    build: ./shopnest-ui
+    container_name: shopnest-ui
+    ports:
+      - 80:80
+    links:
+      - backend
+    networks:
+      - shopnest-net
+    depends_on:
+      - backend
+
+networks:
+  shopnest-net:
+    driver: bridge
+
+volumes:
+  mysql-data:
