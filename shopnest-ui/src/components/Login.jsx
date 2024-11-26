@@ -12,7 +12,7 @@ const Login = () => {
 
   const handleLogin = (event) => {
     event.preventDefault();
-    navigate("/orders");
+    navigate("/");
   };
 
   return (

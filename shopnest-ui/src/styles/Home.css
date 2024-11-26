@@ -1,0 +1,69 @@
+/* src/components/Home.css */
+.home-container {
+  display: flex;
+  height: 100vh;
+}
+
+.side-nav {
+  width: 250px;
+  background-color: #333;
+  color: white;
+  padding: 20px;
+}
+
+.side-nav h2 {
+  margin-bottom: 20px;
+}
+
+.side-nav nav ul {
+  list-style: none;
+  padding: 0;
+}
+
+.side-nav nav ul li {
+  margin-bottom: 10px;
+}
+
+.side-nav nav ul li a {
+  color: white;
+  text-decoration: none;
+}
+
+.side-nav nav ul li a:hover {
+  text-decoration: underline;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  background-color: #f0f2f5;
+  padding: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.account-section {
+  display: flex;
+  align-items: center;
+}
+
+.account-section span {
+  margin-right: 10px;
+}
+
+.account-section a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.account-section a:hover {
+  text-decoration: underline;
+}
+
+.content {
+  padding: 20px;
+}
