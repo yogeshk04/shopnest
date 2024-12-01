@@ -76,11 +76,6 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     networks:
       - shopnest-net
-    deploy:
-      resources:
-        limits:
-          cpus: '0.50'
-          memory: 1024M
 
   # Keycloak service for authentication and authorization
   keycloak:
@@ -88,7 +83,6 @@ services:
     container_name: keycloak-server
     environment:
       TZ: Europe/Berlin
-      PROXY_ADDRESS_FORWARDING: "true"
       KC_HOSTNAME: localhost
       KC_HOSTNAME_PORT: 7080
       KC_HOSTNAME_STRICT_BACKCHANNEL: false
@@ -102,6 +96,7 @@ services:
       KC_DB_URL: jdbc:postgresql://postgres/${POSTGRES_DB}
       KC_DB_USERNAME: ${POSTGRES_USER}
       KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
+      PROXY_ADDRESS_FORWARDING: "true"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:7080/health/ready"]
       interval: 15s

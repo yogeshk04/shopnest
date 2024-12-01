@@ -1,4 +1,4 @@
-############# Database Properties ###########################################
+########################################### Database Properties ###########################################
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -6,20 +6,6 @@ spring:
     url: "jdbc:mysql://shopnest-server.mysql.database.azure.com:3306/shopnest-db?useSSL=true"
     username: shopnest_usr
     password: ShopNest_pwd
-  security:
-    oauth2:
-      client:
-        registration:
-          keycloak:
-            client-id: okta-client-id
-            client-secret: okta-client-secret
-        provider:
-          keycloak:
-            authorization-uri: https://your-subdomain.oktapreview.com/oauth2/v1/authorize
-            token-uri: https://your-subdomain.oktapreview.com/oauth2/v1/token
-            user-info-uri: https://your-subdomain.oktapreview.com/oauth2/v1/userinfo
-            user-name-attribute: sub
-            jwk-set-uri: https://your-subdomain.oktapreview.com/oauth2/v1/keys
   jpa:
     properties:
       hibernate:
@@ -31,4 +17,20 @@ spring:
   sql:
     init:
       mode: always
-############ Keycloak Properties #####################
+########################################### Security Properties ###########################################
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            client-id: shopnest-client
+            client-secret: VZyb5xZ54qCppMeToTFFmn8w9a8wUofP
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope: openid, profile, email
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:7080/realms/master
+            user-info-uri: http://localhost:7080/realms/master/protocol/openid-connect/userinfo
+            token-uri: http://localhost:7080/realms/master/protocol/openid-connect/token
+            authorization-uri: http://localhost:7080/realms/master/protocol/openid-connect/auth
