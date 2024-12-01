@@ -65,20 +65,30 @@ services:
   postgres:
     image: postgres:16.2
     container_name: postgres-db
+    ports:
+      - 5432:5432
     volumes:
       - keycloak_data:/var/lib/postgresql/data
     environment:
+      TZ: Europe/Berlin
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     networks:
       - shopnest-net
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 1024M
 
   # Keycloak service for authentication and authorization
   keycloak:
-    image: quay.io/keycloak/keycloak:26.0
+    image: quay.io/keycloak/keycloak:26.0.6
     container_name: keycloak-server
     environment:
+      TZ: Europe/Berlin
+      PROXY_ADDRESS_FORWARDING: "true"
       KC_HOSTNAME: localhost
       KC_HOSTNAME_PORT: 7080
       KC_HOSTNAME_STRICT_BACKCHANNEL: false
