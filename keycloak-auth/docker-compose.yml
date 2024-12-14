@@ -23,8 +23,8 @@ services:
     container_name: keycloak-server
     environment:
       TZ: Europe/Berlin
-      KC_HOSTNAME: localhost
-      KC_HOSTNAME_PORT: 7080
+      KC_HOSTNAME: backend-keycloak-auth
+      KC_HOSTNAME_PORT: 8082
       KC_HOSTNAME_STRICT_BACKCHANNEL: false
       KC_HTTP_ENABLED: true
       KC_HOSTNAME_STRICT_HTTPS: false
@@ -38,17 +38,16 @@ services:
       KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
       PROXY_ADDRESS_FORWARDING: "true"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:7080/health/ready"]
+      test: ["CMD", "curl", "-f", "http://localhost:8082/health/ready"]
       interval: 15s
       timeout: 2s
       retries: 15
     command: |
-       start-dev --http-port 7080 --db postgres --features token-exchange --db-url jdbc:postgresql://postgres/${POSTGRES_DB} --db-username ${POSTGRES_USER} --db-password ${POSTGRES_PASSWORD} --import-realm
+       start-dev --http-port 8082 --db postgres --features token-exchange --db-url jdbc:postgresql://postgres/${POSTGRES_DB} --db-username ${POSTGRES_USER} --db-password ${POSTGRES_PASSWORD} --import-realm
     volumes:
       - keycloak_data:/opt/jboss/keycloak/standalone/data
     ports:
-      - "7080:7080"
-      - "7443:7443"
+      - "8082:8082"
     depends_on:
       - postgres
     networks:

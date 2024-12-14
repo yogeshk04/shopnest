@@ -1,0 +1,21 @@
+#spring.application.name=shopnest-gateway
+server:
+  port: 8081
+
+spring:
+  application.name: shopnest-gateway
+  cloud:
+    gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:5173"
+            allowedHeaders: "*"
+            allowedMethods:
+              - GET
+              - POST
+      routes:
+        - id: resources
+          uri: http://shopnest-api:8080/messages
+          predicates:
+            Path=/messages/**
