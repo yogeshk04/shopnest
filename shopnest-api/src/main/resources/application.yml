@@ -4,8 +4,24 @@ server:
 
 spring:
   application.name: shopnest-api
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://mysqldb:3306/shopnest-db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&useLegacyDatetimeCode=false
+    username: shopnest_usr
+    password: ShopNest_pwd
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    open-in-view: false
+  sql:
+    init:
+      mode: always
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://backend-keycloak-auth:8082/realms/shopnest
+          issuer-uri: http://backend-keycloak-auth:8082/realms/shopnest-keycloak
