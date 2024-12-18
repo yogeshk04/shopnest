@@ -15,7 +15,12 @@ spring:
               - GET
               - POST
       routes:
-        - id: resources
-          uri: http://shopnest-api:8080/messages
+        - id: shopnest-api
+          uri: lb://shopnest-api
           predicates:
-            Path=/messages/**
+            - Path=/api/**
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://backend-keycloak-auth:8082/realms/shopnest-keycloak

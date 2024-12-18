@@ -25,3 +25,17 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://backend-keycloak-auth:8082/realms/shopnest-keycloak
+  main:
+    allow-bean-definition-overriding: true
+  application:
+    name: shopnest-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: shopnest-api
+          uri: lb://shopnest-api
+          predicates:
+            - Path=/api/**
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RemoveRequestHeader=Set-Cookie
