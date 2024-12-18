@@ -23,7 +23,7 @@ services:
     restart: always
     container_name: php-my-admin
     ports:
-      - 8081:80
+      - 8086:80
     environment:
       PMA_HOST: mysqldb
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
@@ -48,19 +48,83 @@ services:
     volumes:
       - .m2:/root/.m2
 
-  # Frontend React application for the shopnest application
-  frontend:
-    build: ./shopnest-ui
-    container_name: frontend
+  gateway:
+    build: ./shopnest-gateway
+    container_name: gateway
+    restart: always
     ports:
-      - 80:80
-    links:
-      - backend
+      - 8081:8081
     networks:
-      - shopnest-net
+      - shopnest-net    
     depends_on:
       - backend
+    volumes:
+      - .m2:/root/.m2
 
+  # Frontend React application for the shopnest application
+  # frontend:
+  #   build: ./shopnest-ui
+  #   container_name: frontend
+  #   ports:
+  #     - 80:80
+  #   links:
+  #     - backend
+  #   networks:
+  #     - shopnest-net
+  #   depends_on:
+  #     - backend
+  # Postgres database service for Keycloak
+  postgres:
+    image: postgres:16.2
+    container_name: postgres-db
+    ports:
+      - 5432:5432
+    volumes:
+      - keycloak_data:/var/lib/postgresql/data
+    environment:
+      TZ: Europe/Berlin
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    networks:
+      - shopnest-net
+
+  # Keycloak service for authentication and authorization
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0.6
+    container_name: keycloak-server
+    environment:
+      TZ: Europe/Berlin
+      KC_HOSTNAME: backend-keycloak-auth
+      KC_HOSTNAME_PORT: 8082
+      KC_HOSTNAME_STRICT_BACKCHANNEL: false
+      KC_HTTP_ENABLED: true
+      KC_HOSTNAME_STRICT_HTTPS: false
+      KC_HEALTH_ENABLED: true
+      KC_LOG_LEVEL: info
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres/${POSTGRES_DB}
+      KC_DB_USERNAME: ${POSTGRES_USER}
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
+      PROXY_ADDRESS_FORWARDING: "true"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/health/ready"]
+      interval: 15s
+      timeout: 2s
+      retries: 15
+    command: |
+       start-dev --http-port 8082 --db postgres --features token-exchange --db-url jdbc:postgresql://postgres/${POSTGRES_DB} --db-username ${POSTGRES_USER} --db-password ${POSTGRES_PASSWORD} --import-realm
+    volumes:
+      - keycloak_data:/opt/jboss/keycloak/standalone/data
+    ports:
+      - "8082:8082"
+    depends_on:
+      - postgres
+    networks:
+      - shopnest-net
+      
 networks:
   shopnest-net:
     driver: bridge
